@@ -22,7 +22,7 @@ class BitMapFont {
             padding = std::ceil(padding);
             // create bitmap 
             int bitmap[chacacters.length()]; 
-
+            // TODO :
             
         }
 
