@@ -15,10 +15,7 @@ public:
 
         // Implement function
         TypedArray<double> doubleArray = std::move(inputs[0]);
-//         for (auto& elem : doubleArray) {
-//             elem *= 2;
-//         }
-        
+
         // Assign outputs
         outputs[0] = doubleArray;
     }
