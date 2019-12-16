@@ -5,6 +5,9 @@
  * 
  */ 
 #include <sqlite3.h>
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 #include <fstream>
 
@@ -93,7 +96,7 @@ int BitmapToDatabase::update() {
             if (!found_first_char) {
                 continue;
             }
-            
+
 
         }
     }
