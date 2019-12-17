@@ -35,6 +35,8 @@ private:
     std::string query =  "EXPLAIN QUERY PLAN "
                          "SELECT page,idx FROM char_bitmaps WHERE page = '6';";
 
+    std::string write = "SELECT page, idx FROM char_bitmaps "
+                        "WHERE page = %d AND idx = %d;";
 };
 
 /**
