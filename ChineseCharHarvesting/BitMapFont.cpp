@@ -3,7 +3,7 @@
 #include <string>
 #include <cmath>
 // Matlab
-#include <mex.h>
+// #include <mex.h>
 
 using namespace std;
  
