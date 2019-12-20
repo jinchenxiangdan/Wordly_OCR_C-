@@ -112,7 +112,7 @@ int BitmapToDatabase::update() {
 //            cvWaitKey(0);
 
 
-            char_dir = "/home/wan/IdeaProjects/worldly-ocr/ChineseCharHarvesting/BWChars/";
+            char_dir = "Chars/";
         }
     }
     return 0;
