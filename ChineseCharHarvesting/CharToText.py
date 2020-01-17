@@ -8,6 +8,7 @@ import pytesseract
 import matplotlib.pyplot as plt 
 import numpy as np
 import os
+import cv2 as cv 
 
 
 # clear command line
@@ -25,10 +26,11 @@ for j in range(1, 100):
     print("address is ", address)
     # read the char in this image
     try:
-        image = Image.open(address)
+        image_cv = cv.imread(address)
+        image_rgb = cv.cvtColor(image_cv, cv.COLOR_BGR2RGB)
     except IOError:
         print("Error: Cannot open the image file!")
         exit(1)
 
-    result = pytesseract.image_to_string(image, lang='chi_tra')
+    result = pytesseract.image_to_string(image_rgb, lang='chi_tra')
     print("=> character is ", result)
