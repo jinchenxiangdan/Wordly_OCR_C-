@@ -9,10 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-print("=====")
-print(pytesseract.image_to_string(
-    Image.open("/home/wan/Desktop/ShawnJin_Workspace/Images/text.png.jpeg")))
-print("=====")
+
 # clear command line
 clear = lambda:os.system('cls')
 
