@@ -61,7 +61,10 @@ for j in range(1, 100):
 
     ocr_result = mat_eng.ocr(mat_eng.imread(address),'Language','ChineseTraditional','TextLayout','Word');
     print("=> character is: ", result, ".")
-    print("ocr_result: ", ocr_result, ".");
+
+    print("ocr_result: ", ocr_result, ".")
+    # ocr_result is a matlab object, need to convert or extract information from it
+
 
     #
     # This recognization accuracy is extremaly bad 
