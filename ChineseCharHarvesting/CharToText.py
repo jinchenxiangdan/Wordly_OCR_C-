@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import cv2 as cv 
+import matlab.engine
+
 
 #---------------------------------------------------#
 # functions                                         #
@@ -30,6 +32,7 @@ def drawTable(data):
 #---------------------------------------------------#
 
 
+
 # clear command line
 clear = lambda:os.system('cls')
 
@@ -40,6 +43,8 @@ imgname = [None] * 100
 
 plt.figure()
 
+# check the first 100 images 
+mat_eng = matlab.engine.start_matlab()
 for j in range(1, 100):
 
     address = getBWCharsPath("char%05d.pbm" % (j))
@@ -52,8 +57,12 @@ for j in range(1, 100):
         print("Error: Cannot open the image file!")
         exit(1)
     # get result of OCR
-    result = pytesseract.image_to_string(image_rgb, lang='chi_tra')
+    result = pytesseract.image_to_string(image_rgb)
+
+    ocr_result = mat_eng.ocr(mat_eng.imread(address),'Language','ChineseTraditional','TextLayout','Word');
     print("=> character is: ", result, ".")
+    print("ocr_result: ", ocr_result, ".");
+
     #
     # This recognization accuracy is extremaly bad 
     #
@@ -69,4 +78,4 @@ for j in range(1, 100):
             answer = input("Invalid input, please try again. (y/n)")
     
 
-
+eng.quit()
