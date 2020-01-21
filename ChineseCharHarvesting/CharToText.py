@@ -10,19 +10,39 @@ import numpy as np
 import os
 import cv2 as cv 
 
+#---------------------------------------------------#
+# functions                                         #
+#---------------------------------------------------#
+
+# returns the relative path according to the file name
+# dir_path is 'Chars_data/BWChars'
+def getBWCharsPath(file_name):
+    dirpath = 'Chars_data/BWChars'
+    return os.path.join(dirpath, file_name)
+
+def drawTable(data):
+    f = plt.gcf()
+    plt.subplot(2,1,1)
+    
+
+#---------------------------------------------------#
+# end of function part                              #
+#---------------------------------------------------#
+
 
 # clear command line
 clear = lambda:os.system('cls')
 
 imgname = [None] * 100
-for i in range(1, 100):
-    imgname[i] = "char%05d.pbm" % (i)
+# for i in range(1, 100):
 
-dirpath = 'Chars_data/BWChars'
+
+
 plt.figure()
 
 for j in range(1, 100):
-    address = os.path.join(dirpath, imgname[j])
+
+    address = getBWCharsPath("char%05d.pbm" % (j))
     print("address is ", address)
     # read the char in this image
     try:
@@ -31,6 +51,22 @@ for j in range(1, 100):
     except IOError:
         print("Error: Cannot open the image file!")
         exit(1)
-
+    # get result of OCR
     result = pytesseract.image_to_string(image_rgb, lang='chi_tra')
-    print("=> character is ", result)
+    print("=> character is: ", result, ".")
+    #
+    # This recognization accuracy is extremaly bad 
+    #
+    answer = input("Do you think it is correct? (y/n)")
+    while (1) :
+        if answer.lower() == "y":
+            # do something
+            break
+        elif answer.lower() == "n":
+            # do something
+            break
+        else:
+            answer = input("Invalid input, please try again. (y/n)")
+    
+
+
