@@ -11,7 +11,6 @@
 #include <iostream>
 #include <fstream>
 
-
 class BitmapToDatabase {
 
 
@@ -27,7 +26,7 @@ private:
     // default database file path
     std::string db_file = "/home/wan/Desktop/ShawnJin_Workspace/Wordly_OCR_Cpp/ChineseCharHarvesting/Database/charImgData.db";
     // Number of bigger than chars per page
-    int max_char = 9;
+    int max_char = 15;
     //================================ pbm format pictures ===========================
     // std::string char_img_pattern = "page%02d-char%05d.pbm";      // with pages info
     // std::string char_img_pattern_pbm = "char%05d.pbm";           // no pages info
@@ -36,22 +35,22 @@ private:
     std::string char_img_pattern_png = "char%05d.png";              // no pages info
     //================================================================================
 
-    std::string createTable = "CREATE TABLE if NOT EXISTS char_bitmaps "
-                              "(page NUMERIC, "
-                              "idx NUMERIC, "
+    std::string createTable = "CREATE TABLE if NOT EXISTS charBitmaps " \
+                              "(page NUMERIC, "\
+                              "idx NUMERIC, "\
                               "image VARCHAR); ";
-    std::string createIndex = "CREATE INDEX IF NOT EXISTS page_idx "
+    std::string createIndex = "CREATE INDEX IF NOT EXISTS pageIdx " \
                               "ON char_bitmaps (page, idx); ";
-    std::string query_test =  "EXPLAIN QUERY PLAN "
-                         "SELECT page,idx FROM char_bitmaps WHERE page = '6';";
+    std::string query_test =  "EXPLAIN QUERY PLAN "\
+                         "SELECT page,idx FROM char_bitmaps WHERE page = '6';"; \
     // query without page info
-    std::string query =  "SELECT idx FROM char_bitmaps "
+    std::string query =  "SELECT idx FROM charBitmaps " \
                               "WHERE idx = %d;";
 
     // std::string write_with_page = "INSERT INTO char_bitmaps"
     //                               "VALUES (%d, %d, %s);";
 
-    std::string write = "INSERT INTO char_bitmaps(pages, idx, image)"
+    std::string write = "INSERT INTO charBitmaps(page, idx, image) " \
                         "VALUES (0, %d, %s);";
 };
 
@@ -77,9 +76,8 @@ BitmapToDatabase::BitmapToDatabase(char *filePath) {
         db_file = filePath;
     }
 
-    int exit = 0;
     char *errorMessage;
-    exit = sqlite3_open(db_file.c_str(), &database);
+    int exit = sqlite3_open(db_file.c_str(), &database);
     // create table
     exit = sqlite3_exec(database, createTable.c_str(), nullptr, nullptr, &errorMessage);
     if (exit != SQLITE_OK) {
@@ -103,7 +101,7 @@ BitmapToDatabase::BitmapToDatabase(char *filePath) {
 
 int BitmapToDatabase::update() {
 
-    char buffer[150];
+    char buffer[256];
     std::string home_char_dir = "/home/wan/Desktop/ShawnJin_Workspace/Wordly_OCR_Cpp/ChineseCharHarvesting/Chars_data/Chars/";
     for (int page = page_range[0]; page <= page_range[1]; page++) {
         std::cout << "Page:" << page << std::endl;
@@ -111,7 +109,7 @@ int BitmapToDatabase::update() {
 
         // loop each pages in char folder
         for (int index = 1; index < max_char; index++) {
-            int n = sprintf(buffer, char_img_pattern_png.c_str(), index);
+            sprintf(buffer, char_img_pattern_png.c_str(), index);
             std::string char_dir = home_char_dir + buffer;
             std::cout << "buffer : " << char_dir <<std::endl;
 
@@ -122,13 +120,13 @@ int BitmapToDatabase::update() {
                 std::cout << "File doesn't exist!" << std::endl;
                 break;
             }
-
-//            if (!found_first_char) {
-//                return -1;
-//            }
+            // useless code
+            if (!found_first_char) {
+                return -1;
+            }
             // read image
             cv::Mat image = cv::imread(char_dir);
-            // cv::imshow("test", image);
+
             // cvWaitKey(0);
 
             // open database
@@ -138,15 +136,24 @@ int BitmapToDatabase::update() {
                 std::cerr << "Error open the database file!" << std::endl;
                 return -1;
             }
+            std::cout << "Open database successfully!" << std::endl;
             // convert cv::Mat to std::string
-            std::string image_string;
             std::vector<unsigned  char> buff;
             // ALERT: ext need to be changed if the images format changes
-            cv::imencode(".png", image, buff);
-            image_string.resize(buff.size());
-            memcpy(&image_string[0], buff.data(), buff.size());
+
+
+//            memcpy(&image_string[0], buff.data(), buff.size());
+//            image_string = image(src.begin<unsigned char>(), src.end< unsigned char>());
+//            int res = (cv::imencode(".png", image, buff));
+//            std::string write_update(buff.begin(), buff.end());
+//            std::cout << "W U" << write_update << std::endl;
             // update the update query
-            sprintf(buffer, write.c_str(), index, image_string.c_str());
+
+            sprintf(buffer, write.c_str(), index, ("\'" + char_dir + "\' ").c_str());
+//            std::cout << "Write >>> " << buffer <<std::endl;
+
+
+
 //            std::cout << "TEST: query: " << buffer << std::endl;
             // update database
             exit = sqlite3_exec(database, buffer, nullptr, nullptr, &errorMessage);
