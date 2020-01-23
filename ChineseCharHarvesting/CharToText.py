@@ -8,7 +8,7 @@ import pytesseract
 import matplotlib.pyplot as plt 
 import numpy as np
 import os
-import cv2 as cv 
+from cv2 import cv2 as cv 
 import matlab.engine
 
 
@@ -51,20 +51,25 @@ for j in range(1, 100):
     print("address is ", address)
     # read the char in this image
     try:
-        image_cv = cv.imread(address)
+        # image_cv = cv.imread(address)
         image_matlab = mat_eng.imread(address);
     except IOError:
         print("Error: Cannot open the image file!")
         exit(1)
     # get result of OCR
-    result = pytesseract.image_to_string(image_rgb)
+    # result = pytesseract.image_to_string(image_rgb)
 
-    ocr_result = mat_eng.ocr(image_matlab,'Language','ChineseTraditional','TextLayout','Word');
-    print("=> character is: ", result, ".")
+    ocr_result = mat_eng.ocr(image_matlab,'Language','ChineseTraditional','TextLayout','Word').Text;
+    # print("=> character is: ", result, ".")
 
-    print("ocr_result: ", ocr_result, ".")
+
+    print("ocr_result: ", ocr_result.Text(topTenIndexes), ".")
     # ocr_result is a matlab object, need to convert or extract information from it
-
+    
+    image_char = cv.imread(address);
+    cv.namedWindow('Character', cv.WINDOW_AUTOSIZE)
+    cv.imshow('Character',image_char)
+    # cv.waitKey();
 
     #
     # This recognization accuracy is extremaly bad 
@@ -79,6 +84,5 @@ for j in range(1, 100):
             break
         else:
             answer = input("Invalid input, please try again. (y/n)")
-    
 
-eng.quit()
+mat_eng.quit()
