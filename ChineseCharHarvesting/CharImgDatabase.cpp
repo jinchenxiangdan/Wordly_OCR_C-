@@ -4,12 +4,14 @@
  *
  *
  */
+#include "base64.h"
 #include <sqlite3.h>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <iostream>
 #include <fstream>
+
 
 class BitmapToDatabase {
 
@@ -24,7 +26,7 @@ private:
     int page_range[2] = {0, 1};
 
     // default database file path
-    std::string db_file = "/home/wan/Desktop/ShawnJin_Workspace/Wordly_OCR_Cpp/ChineseCharHarvesting/Database/charImgData.db";
+    char db_file[256] = "/home/wan/Desktop/ShawnJin_Workspace/Wordly_OCR_Cpp/ChineseCharHarvesting/Database/charImgData.db";
     // Number of bigger than chars per page
     int max_char = 15;
     //================================ pbm format pictures ===========================
@@ -40,7 +42,7 @@ private:
                               "idx NUMERIC, "\
                               "image VARCHAR); ";
     std::string createIndex = "CREATE INDEX IF NOT EXISTS pageIdx " \
-                              "ON char_bitmaps (page, idx); ";
+                              "ON charBitmaps (page, idx); ";
     std::string query_test =  "EXPLAIN QUERY PLAN "\
                          "SELECT page,idx FROM char_bitmaps WHERE page = '6';"; \
     // query without page info
@@ -70,14 +72,21 @@ inline bool fexists(const std::string filename) {
 BitmapToDatabase::BitmapToDatabase(char *filePath) {
     using namespace std;
     // check if the input path is valid of not
-    if (!fexists(filePath)) {
-        std::cout << "Input path invalid, going to use default path.";
-    } else {
-        db_file = filePath;
-    }
+//    if (!fexists(filePath)) {
+//        std::cout << "Input path invalid, going to use default path.";
+//    } else {
+//        strcpy(db_file, filePath);
+//    }
 
     char *errorMessage;
-    int exit = sqlite3_open(db_file.c_str(), &database);
+    std::cout << "path is " << db_file << std::endl;
+    int exit = sqlite3_open(db_file, &database);
+    if (exit) {
+        fprintf(stderr, "Cannot open database: %s\n", db_file);
+        std::exit(0);
+    } else {
+        fprintf(stdout, "open successful!\n");
+    }
     // create table
     exit = sqlite3_exec(database, createTable.c_str(), nullptr, nullptr, &errorMessage);
     if (exit != SQLITE_OK) {
@@ -101,7 +110,7 @@ BitmapToDatabase::BitmapToDatabase(char *filePath) {
 
 int BitmapToDatabase::update() {
 
-    char buffer[256];
+    char buffer[256000];
     std::string home_char_dir = "/home/wan/Desktop/ShawnJin_Workspace/Wordly_OCR_Cpp/ChineseCharHarvesting/Chars_data/Chars/";
     for (int page = page_range[0]; page <= page_range[1]; page++) {
         std::cout << "Page:" << page << std::endl;
@@ -132,7 +141,7 @@ int BitmapToDatabase::update() {
             // open database
             char* errorMessage;
             int exit;
-            if ((sqlite3_open(db_file.c_str(), &database)) != SQLITE_OK) {
+            if ((sqlite3_open(db_file, &database)) != SQLITE_OK) {
                 std::cerr << "Error open the database file!" << std::endl;
                 return -1;
             }
@@ -144,12 +153,15 @@ int BitmapToDatabase::update() {
 
 //            memcpy(&image_string[0], buff.data(), buff.size());
 //            image_string = image(src.begin<unsigned char>(), src.end< unsigned char>());
-//            int res = (cv::imencode(".png", image, buff));
+            int res = (cv::imencode(".png", image, buff));
 //            std::string write_update(buff.begin(), buff.end());
-//            std::cout << "W U" << write_update << std::endl;
+            auto base64_img = reinterpret_cast<const unsigned char *>(buff.data());
+
+            std::string write_update = "\'data:image-png/base64," + base64_encode(base64_img, buff.size()) + "\'";
+//            std::cout << "W U:" << write_update << std::endl;
             // update the update query
 
-            sprintf(buffer, write.c_str(), index, ("\'" + char_dir + "\' ").c_str());
+            sprintf(buffer, write.c_str(), index, write_update.c_str());
 //            std::cout << "Write >>> " << buffer <<std::endl;
 
 
