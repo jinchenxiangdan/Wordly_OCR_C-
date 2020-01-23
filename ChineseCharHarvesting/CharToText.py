@@ -52,14 +52,14 @@ for j in range(1, 100):
     # read the char in this image
     try:
         image_cv = cv.imread(address)
-        image_rgb = cv.cvtColor(image_cv, cv.COLOR_BGR2RGB)
+        image_matlab = mat_eng.imread(address);
     except IOError:
         print("Error: Cannot open the image file!")
         exit(1)
     # get result of OCR
     result = pytesseract.image_to_string(image_rgb)
 
-    ocr_result = mat_eng.ocr(mat_eng.imread(address),'Language','ChineseTraditional','TextLayout','Word');
+    ocr_result = mat_eng.ocr(image_matlab,'Language','ChineseTraditional','TextLayout','Word');
     print("=> character is: ", result, ".")
 
     print("ocr_result: ", ocr_result, ".")
