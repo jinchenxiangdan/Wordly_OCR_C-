@@ -1,7 +1,12 @@
+
 /**
- * Author: Shawn Jin
- * Purpose: creating a table to store the information of bitmaps.
- *
+ * ANCHOR Shawn Jin
+ * This program encodes images to base64 string and store the image information in a database file. 
+ * When converting, the code would remove the color information. Thus, after decoding, the image 
+ * should be gray image. 
+ * 
+ * Database file path: </home/wan/Desktop/ShawnJin_Workspace/Wordly_OCR_Cpp/ChineseCharHarvesting/Database/charImgData.db>
+ * Image folder path: </home/wan/Desktop/ShawnJin_Workspace/Wordly_OCR_Cpp/ChineseCharHarvesting/Chars_data/Chars/>
  *
  */
 #include "base64.h"
@@ -66,17 +71,12 @@ inline bool fexists(const std::string filename) {
 }
 
 /**
- * CONTRIBUTOR
+ * Create TABLEs in the database 
  * filePath: the path of a database file
  */
 BitmapToDatabase::BitmapToDatabase(char *filePath) {
     using namespace std;
     // check if the input path is valid of not
-//    if (!fexists(filePath)) {
-//        std::cout << "Input path invalid, going to use default path.";
-//    } else {
-//        strcpy(db_file, filePath);
-//    }
 
     char *errorMessage;
     std::cout << "path is " << db_file << std::endl;
@@ -107,7 +107,10 @@ BitmapToDatabase::BitmapToDatabase(char *filePath) {
 }
 
 
-
+/**
+ * store the image information into a database file. 
+ * 
+ */
 int BitmapToDatabase::update() {
 
     char buffer[256000];
@@ -136,8 +139,6 @@ int BitmapToDatabase::update() {
             // read image
             cv::Mat image = cv::imread(char_dir);
 
-            // cvWaitKey(0);
-
             // open database
             char* errorMessage;
             int exit;
@@ -149,24 +150,16 @@ int BitmapToDatabase::update() {
             // convert cv::Mat to std::string
             std::vector<unsigned  char> buff;
             // ALERT: ext need to be changed if the images format changes
-
-
-//            memcpy(&image_string[0], buff.data(), buff.size());
-//            image_string = image(src.begin<unsigned char>(), src.end< unsigned char>());
             int res = (cv::imencode(".png", image, buff));
-//            std::string write_update(buff.begin(), buff.end());
+
             auto base64_img = reinterpret_cast<const unsigned char *>(buff.data());
 
             std::string write_update = "\'data:image-png/base64," + base64_encode(base64_img, buff.size()) + "\'";
-//            std::cout << "W U:" << write_update << std::endl;
+
             // update the update query
 
             sprintf(buffer, write.c_str(), index, write_update.c_str());
-//            std::cout << "Write >>> " << buffer <<std::endl;
 
-
-
-//            std::cout << "TEST: query: " << buffer << std::endl;
             // update database
             exit = sqlite3_exec(database, buffer, nullptr, nullptr, &errorMessage);
             if (exit != SQLITE_OK) {
@@ -184,11 +177,26 @@ int BitmapToDatabase::update() {
 
 /**
  * ANCHOR Shawn Jin
- *
+ * This program encodes images to base64 string and store the image information in a database file. 
+ * When converting, the code would remove the color information. Thus, after decoding, the image 
+ * should be gray image. 
+ * 
+ * Database file path: </home/wan/Desktop/ShawnJin_Workspace/Wordly_OCR_Cpp/ChineseCharHarvesting/Database/charImgData.db>
+ * Image folder path: </home/wan/Desktop/ShawnJin_Workspace/Wordly_OCR_Cpp/ChineseCharHarvesting/Chars_data/Chars/>
  *
  */
 int main() {
     char path[] = "test img";
+    // test the running time 
+    // time stamp: start
+    clock_t start = clock();
+    // program start 
     BitmapToDatabase bitmapToDatabase = *new BitmapToDatabase(path);
     bitmapToDatabase.update();
+    // tem stamp: end 
+    clock_t stop = clock();
+    double elapsed = (double) (stop - start) / CLOCKS_PER_SEC;
+
+    printf("\nTime elapsed: %.5f\n", elapsed);
+    return 0;
 }
