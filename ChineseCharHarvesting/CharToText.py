@@ -1,3 +1,4 @@
+# MATLAB test running time: self time: 38.491s , total tiem 64.412s 
 
 try:
     from PIL import Image
@@ -59,11 +60,14 @@ for j in range(1, 100):
     # get result of OCR
     # result = pytesseract.image_to_string(image_rgb)
 
-    ocr_result = mat_eng.ocr(image_matlab,'Language','ChineseTraditional','TextLayout','Word').Text;
+    ocr_result = mat_eng.ocr(image_matlab,'Language','ChineseTraditional','TextLayout','Word');
+    print("Struct: ", dir(ocr_result));
     # print("=> character is: ", result, ".")
 
 
-    print("ocr_result: ", ocr_result.Text(topTenIndexes), ".")
+    for attr in dir(ocr_result):
+        print(attr, ": ", ocr_result)
+    print("ocr_result: ", ocr_result.__str__, ".")
     # ocr_result is a matlab object, need to convert or extract information from it
     
     image_char = cv.imread(address);
