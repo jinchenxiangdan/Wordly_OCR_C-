@@ -32,14 +32,15 @@ def drawTable(character, accuracy):
 # end of function part                              #
 #---------------------------------------------------#
 
-
 #
-#
+# Purpose: Read images from file and use OCR to recoginize 
+# characters After that, store correct recogonization information
+# 
+# Works with matlab function <ocr_matlab.m>
 #
 def main():
     # clear command line
     lambda:os.system('cls')
-
 
     # initial dictionary 
     analysis_data_key = [None] * 100
@@ -50,8 +51,8 @@ def main():
 
     # check the first 100 images 
     mat_eng = matlab.engine.start_matlab()
-    for j in range(1, 100):
 
+    for j in range(1, 100):
         address = getBWCharsPath("char%05d.pbm" % (j))
         #FOR TEST
         #
