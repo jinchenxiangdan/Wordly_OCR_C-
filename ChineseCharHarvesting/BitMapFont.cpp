@@ -1,9 +1,6 @@
 #include <iostream>
-
 #include <string>
 #include <cmath>
-// Matlab
-// #include <mex.h>
 
 using namespace std;
  
